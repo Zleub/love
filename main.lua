@@ -1,25 +1,7 @@
-inspect = require 'inspect'
-
 function love.load()
 	loveframes = require("lua.loveframes")
 
-	mainmenu = loveframes.Create('frame')
-	mainmenu:SetDraggable(false)
-	mainmenu:ShowCloseButton(false)
-	mainmenu:Center()
-
-	list = loveframes.Create("list", mainmenu)
-
-	text = loveframes.Create('text', list)
-	text:SetSize(5, 5)
-	text:SetText('Delemerdes')
-	text:Center()
-
-	buttonnew = loveframes.Create('button', list)
-	buttonload = loveframes.Create('button', list)
-	buttonoption = loveframes.Create('button', list)
-
-	print(inspect(text))
+	require('mainmenu')
 
 end
 

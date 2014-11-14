@@ -1,43 +1,54 @@
+inspect = require 'inspect'
+
 function love.load()
-	-- require 'Lua/Pl'
-	Phases = require 'Lua/Phases':init()
+	loveframes = require("lua.loveframes")
 
-	-- print(pretty.write(Phases))
-end
+	mainmenu = loveframes.Create('frame')
+	mainmenu:SetDraggable(false)
+	mainmenu:ShowCloseButton(false)
+	mainmenu:Center()
 
-function convert(key)
-	if key == 'space' then
-		return ' '
-	elseif key == 'enter' then
-		return 'return'
-	else
-		return key
-	end
-end
+	list = loveframes.Create("list", mainmenu)
 
-function love.keypressed(key)
-	local msg = nil
-	local data = nil
+	text = loveframes.Create('text', list)
+	text:SetSize(5, 5)
+	text:SetText('Delemerdes')
+	text:Center()
 
-	if Phases.current.kb_events then
-		for k, ft in pairs(Phases.current.kb_events) do
-			k = convert(k)
-			if key == k then
-				msg, data = ft(Phases.current)
-			end
-		end
-	end
+	buttonnew = loveframes.Create('button', list)
+	buttonload = loveframes.Create('button', list)
+	buttonoption = loveframes.Create('button', list)
 
-	if msg == 'next_phase' then
-		print('next_phase', data)
-		Phases:getPhase(data)
-	end
+	print(inspect(text))
+
 end
 
 function love.update(dt)
-	Phases:update(dt)
+	loveframes.update(dt)
 end
 
 function love.draw()
-	Phases:draw()
+	loveframes.draw()
+
+end
+
+function love.mousepressed(x, y, button)
+	loveframes.mousepressed(x, y, button)
+
+end
+
+function love.mousereleased(x, y, button)
+	loveframes.mousereleased(x, y, button)
+end
+
+function love.keypressed(key, unicode)
+	loveframes.keypressed(key, unicode)
+end
+
+function love.keyreleased(key)
+	loveframes.keyreleased(key)
+end
+
+function love.textinput(text)
+	loveframes.textinput(text)
 end

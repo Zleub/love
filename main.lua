@@ -1,8 +1,9 @@
+inspect = require('inspect')
+
 function love.load()
 	loveframes = require("lua.loveframes")
-
 	require('mainmenu')
-
+	loveframes.SetState("mainmenu")
 end
 
 function love.update(dt)

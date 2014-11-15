@@ -1,15 +1,38 @@
-mainmenu = loveframes.Create('frame')
-mainmenu:SetDraggable(false)
-mainmenu:ShowCloseButton(false)
+function sendnewgame()
+	loveframes.SetState('newgame')
+end
+
+function sendloadgame()
+	print('load')
+	-- loveframes.SetState('loadgame')
+end
+
+function sendoptions()
+	print('option')
+	-- loveframes.SetState('options')
+end
+
+mainmenu = loveframes.Create('list')
+mainmenu:SetPadding(5)
+mainmenu:SetSpacing(20)
 mainmenu:Center()
+mainmenu:SetState('mainmenu')
 
-list = loveframes.Create("list", mainmenu)
-list:SetPadding(5)
-list:SetSpacing(10)
+buttonnew = loveframes.Create('button', mainmenu):SetText('New Game')
+buttonnew.OnClick = sendnewgame
 
-text = loveframes.Create('text', list):SetFont(fonts[10])
-text:SetText('merde')
+buttonload = loveframes.Create('button', mainmenu):SetText('Load Game')
+buttonload.OnClick = sendloadgame
 
-buttonnew = loveframes.Create('button', list):SetText('New Game')
-buttonload = loveframes.Create('button', list):SetText('Load Game')
-buttonoption = loveframes.Create('button', list):SetText('Options')
+buttonoption = loveframes.Create('button', mainmenu):SetText('Options')
+buttonoption.OnClick = sendoptions
+
+
+
+
+newgame = loveframes.Create('panel')
+newgame:SetSize(love.window.getDimensions())
+newgame:SetState('newgame')
+
+loveframes.Create('text', newgame):SetText('New game')
+-- loveframes.Create('image', newgame):SetPos(10, 10):SetImage('')

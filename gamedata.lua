@@ -18,6 +18,8 @@ function gamedata:requiremaps()
 		v = string.sub(v, 1, -5)
 		self.maps[v] = {}
 		self.maps[v].tiled = require ('Maps/'..v)
+		self.maps[v].Quadlists = {}
+
 	end
 end
 

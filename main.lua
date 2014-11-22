@@ -2,17 +2,18 @@ inspect = require('inspect')
 
 function love.load()
 	loveframes = require("lua.loveframes")
-	require('mainmenu')
-	loveframes.SetState("mainmenu")
+	game = require('game'):init()
 end
 
 function love.update(dt)
+	game:update(dt)
+	-- print(loveframes.GetState())
 	loveframes.update(dt)
 end
 
 function love.draw()
+	game:draw()
 	loveframes.draw()
-
 end
 
 function love.mousepressed(x, y, button)

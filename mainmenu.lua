@@ -1,38 +1,28 @@
-function sendnewgame()
-	loveframes.SetState('newgame')
+local mainmenu = {}
+
+function mainmenu:init()
+
+	self.list = loveframes.Create('list')
+	self.list:SetPadding(5)
+	self.list:SetSpacing(20)
+	self.list:SetHeight(125)
+	self.list:Center()
+	self.list:SetState('mainmenu')
+
+	self.buttonnew = loveframes.Create('button', self.list):SetText('New Game')
+	self.buttonnew.OnClick = function () loveframes.SetState('newgame') end
+
+	self.buttonload = loveframes.Create('button', self.list):SetText('Load Game')
+	self.buttonload.OnClick = function () print('load') end
+
+	self.buttonoption = loveframes.Create('button', self.list):SetText('Options')
+	self.buttonoption.OnClick = function () print('option') end
+
+	self.buttontest = loveframes.Create('button', self.list):SetText('Test')
+	self.buttontest.OnClick = function () loveframes.SetState('lobby') end
+
+
+return self
 end
 
-function sendloadgame()
-	print('load')
-	-- loveframes.SetState('loadgame')
-end
-
-function sendoptions()
-	print('option')
-	-- loveframes.SetState('options')
-end
-
-mainmenu = loveframes.Create('list')
-mainmenu:SetPadding(5)
-mainmenu:SetSpacing(20)
-mainmenu:Center()
-mainmenu:SetState('mainmenu')
-
-buttonnew = loveframes.Create('button', mainmenu):SetText('New Game')
-buttonnew.OnClick = sendnewgame
-
-buttonload = loveframes.Create('button', mainmenu):SetText('Load Game')
-buttonload.OnClick = sendloadgame
-
-buttonoption = loveframes.Create('button', mainmenu):SetText('Options')
-buttonoption.OnClick = sendoptions
-
-
-
-
-newgame = loveframes.Create('panel')
-newgame:SetSize(love.window.getDimensions())
-newgame:SetState('newgame')
-
-loveframes.Create('text', newgame):SetText('New game')
--- loveframes.Create('image', newgame):SetPos(10, 10):SetImage('')
+return mainmenu

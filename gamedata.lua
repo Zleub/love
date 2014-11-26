@@ -18,7 +18,7 @@ end
 -- build self.player
 function gamedata:requireplayer()
 	self.player = {}
-	self.player.lobby = 'level_01'
+	self.player.lobby = 'level_00'
 end
 
 function gamedata:getmap(map_name)

@@ -1,4 +1,5 @@
 inspect = require('inspect')
+lib = require('lib')
 
 function love.load()
 	loveframes = require("lua.loveframes")
@@ -12,6 +13,7 @@ function love.update(dt)
 end
 
 function love.draw()
+	love.graphics.print(love.timer.getFPS(), love.graphics.getWidth() -30)
 	game:draw()
 	loveframes.draw()
 end
@@ -26,6 +28,7 @@ function love.mousereleased(x, y, button)
 end
 
 function love.keypressed(key, unicode)
+	game:keypressed(key, unicode)
 	loveframes.keypressed(key, unicode)
 end
 

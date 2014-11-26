@@ -15,7 +15,7 @@ return {
       tileheight = 64,
       spacing = 0,
       margin = 0,
-      image = "../Images/isotest.png",
+      image = "Images/isotest.png",
       imagewidth = 1024,
       imageheight = 512,
       properties = {},

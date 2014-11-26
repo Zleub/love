@@ -11,25 +11,24 @@ function gamedata:checkslots()
 end
 
 -- build self.maps.MAP_NAME.tiled
-function gamedata:requiremaps()
-	self.maps = {}
+function gamedata:requiremaps(Collider)
+	self.maps = require 'maps':init(Collider)
+end
 
-	for k,v in pairs(love.filesystem.getDirectoryItems('Maps')) do
-		v = string.sub(v, 1, -5)
-		self.maps[v] = {}
-		self.maps[v].tiled = require ('Maps/'..v)
-		self.maps[v].Quadlists = {}
-
-	end
+-- build self.player
+function gamedata:requireplayer()
+	self.player = {}
+	self.player.lobby = 'level_01'
 end
 
 function gamedata:getmap(map_name)
 	return self.maps[map_name]
 end
 
-function gamedata:init()
+function gamedata:init(Collider)
 	self:checkslots()
-	self:requiremaps()
+	self:requiremaps(Collider)
+	self:requireplayer()
 	return self
 end
 

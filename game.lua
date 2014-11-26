@@ -2,32 +2,43 @@ local game = {}
 
 function game:init()
 	require 'mainmenu':init()
+	-- require 'persodebug':init()
 
-	self.gamedata = require 'gamedata':init()
+	self.Collider = require "Lua/hardoncollider"
+
+	self.gamedata = require 'gamedata':init(self.Collider)
 	self.lobby = require 'lobby':init(self.gamedata)
-	loveframes.SetState("mainmenu")
+	loveframes.SetState('lobby')
 
-	-- print(inspect(self, {depth = 4}))
 	return self
 end
 
 function game:collect()
-	self.toDraw = {}
+	self.collected = {}
 
 	for k,v in pairs(self) do
 		if type(v) == 'table' and v.State == loveframes.GetState() then
-			table.insert(self.toDraw, v)
+			table.insert(self.collected, v)
 		end
 	end
 end
 
 function game:update(dt)
 	self:collect()
+	for k,v in pairs(self.collected) do
+		v:update(dt)
+	end
 end
 
 function game:draw()
-	for k,v in pairs(self.toDraw) do
+	for k,v in pairs(self.collected) do
 		v:draw()
+	end
+end
+
+function game:keypressed(key, unicode)
+	for k,v in pairs(self.collected) do
+		v:keypressed(key, unicode)
 	end
 end
 

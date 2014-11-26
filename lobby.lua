@@ -51,9 +51,10 @@ function lobby:draw()
 		end
 
 		for key,shape in pairs(shapedlayer) do
-			-- if shape:collidesWith(self.mouse) then
-				shape:draw()
-			 -- end
+			if shape:collidesWith(self.mouse) then
+				shape:draw('fill')
+			 end
+				-- shape:draw()
 		end
 	end
 

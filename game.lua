@@ -1,14 +1,14 @@
 local game = {}
 
 function game:init()
-	require 'mainmenu':init()
+	require 'ui'
 	-- require 'persodebug':init()
 
 	self.Collider = require "Lua/hardoncollider"
 
 	self.gamedata = require 'gamedata':init(self.Collider)
 	self.lobby = require 'lobby':init(self.gamedata)
-	loveframes.SetState('lobby')
+	loveframes.SetState('mainmenu')
 
 	return self
 end

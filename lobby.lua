@@ -3,11 +3,8 @@ local lobby = {}
 function collide_callback(dt, shape_one, shape_two, dx, dy)
 	if shape_one == lobby.mouse then
 		lobby.toFill = shape_two
-		return
-	end
-	if shape_two == lobby.mouse then
+	elseif shape_two == lobby.mouse then
 		lobby.toFill = shape_one
-		return
 	end
 end
 
@@ -20,7 +17,7 @@ function lobby:init(gamedata)
 	self.offy = 0
 
 	self.map = self.gamedata.maps[self.gamedata.player.lobby]
-	-- self.map.HC:setCallbacks(collide_callback)
+	self.map.HC:setCallbacks(collide_callback)
 	self.mouse = self.map.HC:addCircle(0, 0, 2)
 	return self
 end
@@ -40,27 +37,27 @@ function lobby:draw()
 	end
 
 	for k, shapedlayer in ipairs(self.map.Shapes) do
-		if k == 1 then
-			love.graphics.setColor( 255, 0, 0)
-		elseif k == 2 then
-			love.graphics.setColor( 0, 255, 0)
-		elseif k == 3 then
-			love.graphics.setColor( 0, 0, 255)
-		else
-			love.graphics.setColor( 255, 255, 255)
-		end
+		-- if k == 1 then
+		-- 	love.graphics.setColor( 255, 0, 0)
+		-- elseif k == 2 then
+		-- 	love.graphics.setColor( 0, 255, 0)
+		-- elseif k == 3 then
+		-- 	love.graphics.setColor( 0, 0, 255)
+		-- else
+		-- 	love.graphics.setColor( 255, 255, 255)
+		-- end
 
 		for key,shape in pairs(shapedlayer) do
-			if shape:collidesWith(self.mouse) then
-				shape:draw('fill')
-			 end
-				-- shape:draw()
+			-- if shape:collidesWith(self.mouse) then
+			-- 	shape:draw('fill')
+			--  end
+				shape:draw()
 		end
 	end
 
-	-- if self.toFill then
-	-- 	self.toFill:draw('fill')
-	-- end
+	if self.toFill then
+		self.toFill:draw('fill')
+	end
 	-- love.graphics.draw(self.cursor.image, self.cursor.x, self.cursor.y)
 end
 

@@ -2,7 +2,6 @@ local game = {}
 
 function game:init()
 	require 'ui'
-	-- require 'persodebug':init()
 
 	self.Collider = require "Lua/hardoncollider"
 

@@ -59,14 +59,14 @@ function buildshapes(layer, map, offx, offy)
 	for i = 1, layer.height do
 		for j = 1, layer.width do
 
-			-- if layer.data[k] ~= 0
+			if layer.data[k] ~= 0
 				-- and
 				-- layer.data[k] ~= 34 and
 				--  layer.data[k] ~= 9 and
 				--  layer.data[k] ~= 10 and
 				--  layer.data[k] ~= 11
 
-				 -- then
+				 then
 
 			table.insert(shapes, map.HC:addPolygon(
 				x - map.tiled.tilesets[1].tilewidth / 2, y,
@@ -75,7 +75,39 @@ function buildshapes(layer, map, offx, offy)
 				x, y - map.tiled.tilesets[1].tileheight / 2
 			))
 
-			-- end
+			end
+
+			if k % 10 == 0 then
+				m = m + 1
+			end
+			k = k + 1
+			x = x + map.tiled.tilesets[1].tilewidth / 2
+			y = y + map.tiled.tilesets[1].tileheight / 2
+		end
+		x, y = centerize(offx, offy)
+		y = y + (map.tiled.tilesets[1].tileheight / 2) * m
+		x = x - (map.tiled.tilesets[1].tilewidth / 2) * m
+	end
+	return shapes
+end
+
+
+function buildfullshapes(layer, map, offx, offy)
+	local k = 1
+	local m = 0
+	local shapes = {}
+
+	local x, y = centerize(offx, offy)
+
+	for i = 1, layer.height do
+		for j = 1, layer.width do
+
+			table.insert(shapes, map.HC:addPolygon(
+				x - map.tiled.tilesets[1].tilewidth / 2, y,
+				x, y + map.tiled.tilesets[1].tileheight / 2,
+				x + map.tiled.tilesets[1].tilewidth / 2, y,
+				x, y - map.tiled.tilesets[1].tileheight / 2
+			))
 
 			if k % 10 == 0 then
 				m = m + 1

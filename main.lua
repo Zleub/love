@@ -1,5 +1,5 @@
 inspect = require('inspect')
-lib = require('lib')
+require('lib')
 
 function love.load()
 	loveframes = require("lua.loveframes")

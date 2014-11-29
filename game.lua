@@ -1,5 +1,9 @@
 local game = {}
 
+function game:require_all()
+
+end
+
 function game:init()
 	require 'ui'
 
@@ -7,7 +11,8 @@ function game:init()
 
 	self.gamedata = require 'gamedata':init(self.Collider)
 	self.lobby = require 'lobby':init(self.gamedata)
-	loveframes.SetState('mainmenu')
+	self.editor = require 'editor':init()
+	loveframes.SetState('editor')
 
 	return self
 end

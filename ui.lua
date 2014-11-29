@@ -8,8 +8,12 @@ function getfield (f)
 end
 
 function log(field, nbrdepth)
+	print(field, nbrdepth)
 	return inspect(field, {depth = nbrdepth})
 end
+
+demerde = {}
+demerde.truc = 'chose'
 
 function pop_console(object)
 	local cons = loveframes.Create('frame'):SetState(object:GetState()):SetName('Console')
@@ -30,12 +34,16 @@ function pop_console(object)
 		local func = string.match(text, "(.+)%(")
 		local arg = string.match(text, "%((.+)%)")
 
+		local array = {}
 		if arg then
-			local array = {}
 			for i in string.gmatch(arg, "([^,]+)") do
 				if string.match(i, "['|\"](.+)['|\"]") == nil then
-					print(i, "is field")
-					table.insert(array, getfield(i))
+					-- if string.match(i, ".+%.(.+)") == nil then
+					-- 	table.insert(array, i)
+					-- else
+						print(i, "is field")
+						table.insert(array, getfield(i))
+					-- end
 				else
 					print(i, "is string")
 					table.insert(array, string.match(i, "['|\"](.+)['|\"]"))
@@ -43,22 +51,16 @@ function pop_console(object)
 			end
 		end
 
-		if arg == nil then
-			local field = string.match(text, "%((.+)%)")
-			if field then arg = getfield(field) end
-		end
-
-		print(func, arg, field)
+		-- if arg == nil then
+		-- 	local field = string.match(text, "%((.+)%)")
+		-- 	if field then arg = getfield(field) end
+		-- end
 
 		-- FULL REFLEXION NEEDED RIGHT HERE
 
-		-- if array[1] == 'print' and array[2] and array[3] then
-		-- 	str = inspect(getfield(array[3]), {depth = tonumber(array[2])})
-		-- elseif array[1] == 'print' and array[2] then
-		-- 	str = inspect(getfield(array[2]), {depth = 1})
-		-- end
+		print(inspect(array))
 
-		if func and arg then str = _G[func](arg) end
+		if func and arg and _G[func] then str = _G[func](unpack(array)) end
 		term:SetText(str)
 	end
 end

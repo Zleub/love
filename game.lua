@@ -12,6 +12,7 @@ function game:init()
 	self.gamedata = require 'gamedata':init(self.Collider)
 	self.lobby = require 'lobby':init(self.gamedata)
 	self.editor = require 'editor':init()
+
 	loveframes.SetState('editor')
 
 	return self

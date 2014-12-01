@@ -20,12 +20,15 @@ function pop_console(object)
 	list:SetPos(0, 25)
 	list:SetHeight(cons:GetHeight() - 45)
 
+	local term = loveframes.Create('text', list)
 	local input = loveframes.Create('textinput', cons)
 	input:SetWidth(300)
 	input:SetPos(0, cons:GetHeight() - 21)
 	input.OnEnter = function (object, text)
 		local str = 'NULL'
 		local func = string.match(text, "(.+)%(")
+		-- if(string.match(func, "%.")
+		func = getfield(func)
 		local arg = string.match(text, "%((.+)%)")
 
 		local array = {}
@@ -43,10 +46,21 @@ function pop_console(object)
 			end
 		end
 
-		if func and arg and _G[func] then
-			str = _G[func](unpack(array))
+		for k,v in pairs(array) do
+			print(v)
 		end
-		local term = loveframes.Create('text', list):SetText(str)
+
+		print(func, arg)
+
+		if func and arg then
+			dlog('exec')
+			str = func(unpack(array))
+		end
+		if str and #str > 5000 then
+			term:SetText(string.sub(str, 0, 5000))
+		else
+			term:SetText(str)
+		end
 	end
 end
 
@@ -86,7 +100,9 @@ local e_tilewidth = loveframes.Create('textinput', e_list_map)
 loveframes.Create('text', e_list_map):SetText('TileHeight (Pixsize)')
 local e_tileheight = loveframes.Create('textinput', e_list_map)
 local e_create_map = loveframes.Create('button', e_list_map):SetText('Create Map')
-e_create_map.OnClick = function () if e_tilewidth:GetText() and e_tileheight:GetText() then print(e_tilewidth:GetText(), e_tileheight:GetText()) end end
+e_create_map.OnClick = function () if e_tilewidth:GetText() and e_tileheight:GetText() then
+	print(e_tilewidth:GetText(), e_tileheight:GetText()) end
+end
 
 -- LAYER FRAME
 
@@ -100,7 +116,7 @@ local e_height = loveframes.Create('textinput', e_list_layer)
 
 -- DEBUG CONSOLE
 
-local c_button = loveframes.Create('button'):SetState('editor'):SetText('console'):SetPos(love.window.getWidth() - 100, love.window.getHeight()- 50)
+c_button = loveframes.Create('button'):SetState('editor'):SetText('console'):SetPos(love.window.getWidth() - 100, love.window.getHeight()- 50)
 c_button.OnClick = pop_console
 
--- pop_console(c_button)
+pop_console(loveframes)

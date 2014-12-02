@@ -13,7 +13,7 @@ function game:init()
 	self.lobby = require 'lobby':init(self.gamedata)
 	self.editor = require 'editor':init()
 
-	loveframes.SetState('editor')
+	loveframes.SetState('lobby')
 
 	return self
 end

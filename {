@@ -1,0 +1,30 @@
+{
+	tilewidth
+	tileheight
+	tilesets = {
+		{
+			name
+			firstgid
+			tilewidth
+			tileheight
+			imagewidth
+			imageheight
+			spacing
+			margin
+			image
+			properties
+			tiles		?
+		}
+	}
+	layers = {
+		{
+			name
+			x
+			y
+			width
+			height
+			properties
+			data
+		}
+	}
+}

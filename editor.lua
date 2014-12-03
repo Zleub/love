@@ -1,7 +1,17 @@
 local editor = {}
 
-function editor:init()
+function editor:addMap()
+	self.HC = self.Collider.new(150)
+	print('add map')
+end
+
+function editor:addLayer()
+	print('add layer')
+end
+
+function editor:init(Collider)
 	self.State = 'editor'
+	self.Collider = Collider
 
 	return self
 end

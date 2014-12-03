@@ -10,10 +10,10 @@ function game:init()
 	self.Collider = require "Lua/hardoncollider"
 
 	self.gamedata = require 'gamedata':init(self.Collider)
+	self.editor = require 'editor':init(self.Collider)
 	self.lobby = require 'lobby':init(self.gamedata)
-	self.editor = require 'editor':init()
 
-	loveframes.SetState('lobby')
+	loveframes.SetState('editor')
 
 	return self
 end

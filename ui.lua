@@ -90,19 +90,36 @@ buttontest.OnClick = function () loveframes.SetState('editor') end
 
 
 -- EDITOR
+-- INFO FRAME
+
+local editor = {}
+
+local e_frame_info = loveframes.Create('frame'):SetState('editor'):SetName('Infos')
+local e_frame_text1 = loveframes.Create('text', e_frame_info):SetText('No data yet'):SetPos(0, 30)
+
+
 -- MAP FRAME
 
-local e_frame_map = loveframes.Create('frame'):SetState('editor'):SetName('Map'):SetScreenLocked(true)
-local e_list_map = loveframes.Create('list', e_frame_map):SetPos(0, 25)
+function create_map_test()
+	if editor.tilewidth and editor.tileheight then
+		e_frame_text1:SetText("tilesize: "..editor.tilewidth
+			.."x"..tonumber(editor.tileheight))
+		game.editor:addMap()
+	end
+	print('call')
+end
+
+local e_frame_map = loveframes.Create('frame'):SetState('editor'):SetName('Map'):SetScreenLocked(true):SetSize(125, 125)
+local e_list_map = loveframes.Create('list', e_frame_map):SetPos(0, 25):SetSpacing(5):SetSize(e_frame_map:GetSize())
 
 loveframes.Create('text', e_list_map):SetText('TileWidth (Pixsize)')
 local e_tilewidth = loveframes.Create('textinput', e_list_map)
+e_tilewidth.OnTextChanged = function (object, text) editor.tilewidth = tonumber(text) end
 loveframes.Create('text', e_list_map):SetText('TileHeight (Pixsize)')
 local e_tileheight = loveframes.Create('textinput', e_list_map)
-local e_create_map = loveframes.Create('button', e_list_map):SetText('Create Map')
-e_create_map.OnClick = function () if e_tilewidth:GetText() and e_tileheight:GetText() then
-	print(e_tilewidth:GetText(), e_tileheight:GetText()) end
-end
+e_tileheight.OnTextChanged = function (object, text) editor.tileheight = tonumber(text) end
+local e_settilesize = loveframes.Create('button', e_list_map):SetText('Set Tile Size')
+e_settilesize.OnClick = create_map_test
 
 -- LAYER FRAME
 
@@ -113,10 +130,11 @@ loveframes.Create('text', e_list_layer):SetText('Width (Tile nbr)')
 local e_width = loveframes.Create('textinput', e_list_layer)
 loveframes.Create('text', e_list_layer):SetText('Height (Tile nbr)')
 local e_height = loveframes.Create('textinput', e_list_layer)
+local e_newlayer = loveframes.Create('button', e_list_layer):SetText('Create Layer')
 
 -- DEBUG CONSOLE
 
 c_button = loveframes.Create('button'):SetState('editor'):SetText('console'):SetPos(love.window.getWidth() - 100, love.window.getHeight()- 50)
 c_button.OnClick = pop_console
 
-pop_console(loveframes)
+-- pop_console(loveframes)

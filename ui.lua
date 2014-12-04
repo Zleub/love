@@ -25,53 +25,53 @@ function pop_console(object)
 	input:SetWidth(300)
 	input:SetPos(0, cons:GetHeight() - 21)
 	input.OnEnter = function (object, text)
-		local str = 'NULL'
-		local func = string.match(text, "(.+)%(")
+	local str = 'NULL'
+	local func = string.match(text, "(.+)%(")
 		-- if(string.match(func, "%.")
-		func = getfield(func)
-		local arg = string.match(text, "%((.+)%)")
+			func = getfield(func)
+			local arg = string.match(text, "%((.+)%)")
 
-		local array = {}
-		if arg then
-			for i in string.gmatch(arg, "([^,]+)") do
-				if string.match(i, "['|\"](.+)['|\"]") == nil then
-					if getfield(i) then
-						table.insert(array, getfield(i))
+			local array = {}
+			if arg then
+				for i in string.gmatch(arg, "([^,]+)") do
+					if string.match(i, "['|\"](.+)['|\"]") == nil then
+						if getfield(i) then
+							table.insert(array, getfield(i))
+						else
+							table.insert(array, tonumber(i))
+						end
 					else
-						table.insert(array, tonumber(i))
+						table.insert(array, string.match(i, "['|\"](.+)['|\"]"))
 					end
-				else
-					table.insert(array, string.match(i, "['|\"](.+)['|\"]"))
 				end
 			end
-		end
 
-		for k,v in pairs(array) do
-			print(v)
-		end
+			for k,v in pairs(array) do
+				print(v)
+			end
 
-		print(func, arg)
+			print(func, arg)
 
-		if func and arg then
-			dlog('exec')
-			str = func(unpack(array))
-		end
-		if str and #str > 5000 then
-			term:SetText(string.sub(str, 0, 5000))
-		else
-			term:SetText(str)
+			if func and arg then
+				dlog('exec')
+				str = func(unpack(array))
+			end
+			if str and #str > 5000 then
+				term:SetText(string.sub(str, 0, 5000))
+			else
+				term:SetText(str)
+			end
 		end
 	end
-end
 
 -- MAIN MENU
 
 local list = loveframes.Create('list')
-list:SetPadding(5)
-list:SetSpacing(20)
-list:SetHeight(225)
-list:Center()
-list:SetState('mainmenu')
+			:SetPadding(5)
+			:SetSpacing(20)
+			:SetHeight(225)
+			:Center()
+			:SetState('mainmenu')
 
 local buttonnew = loveframes.Create('button', list):SetText('New Game')
 buttonnew.OnClick = function () loveframes.SetState('newgame') end
@@ -94,47 +94,110 @@ buttontest.OnClick = function () loveframes.SetState('editor') end
 
 local editor = {}
 
+function editor:inspect()
+	return inspect(self)
+end
+
 local e_frame_info = loveframes.Create('frame'):SetState('editor'):SetName('Infos')
 local e_frame_text1 = loveframes.Create('text', e_frame_info):SetText('No data yet'):SetPos(0, 30)
 
 
 -- MAP FRAME
 
-function create_map_test()
+function set_size()
 	if editor.tilewidth and editor.tileheight then
-		e_frame_text1:SetText("tilesize: "..editor.tilewidth
-			.."x"..tonumber(editor.tileheight))
+		e_frame_text1:SetText(editor:inspect())
 		game.editor:addMap()
+		get_frame_layer():SetVisible(true)
+		get_frame_map():SetVisible(false)
 	end
-	print('call')
 end
 
-local e_frame_map = loveframes.Create('frame'):SetState('editor'):SetName('Map'):SetScreenLocked(true):SetSize(125, 125)
-local e_list_map = loveframes.Create('list', e_frame_map):SetPos(0, 25):SetSpacing(5):SetSize(e_frame_map:GetSize())
+local e_frame_map = loveframes.Create('frame')
+						:SetName('Map')
+						:SetState('editor')
+						:SetSize(125, 125)
+						:Center()
+						:SetScreenLocked(true)
+local e_list_map = loveframes.Create('list', e_frame_map)
+						:SetSize(e_frame_map:GetSize())
+						:SetPos(0, 25)
+						:SetSpacing(5)
 
-loveframes.Create('text', e_list_map):SetText('TileWidth (Pixsize)')
+loveframes.Create('text', e_list_map)
+	:SetText('TileWidth (Pixsize)')
+
 local e_tilewidth = loveframes.Create('textinput', e_list_map)
-e_tilewidth.OnTextChanged = function (object, text) editor.tilewidth = tonumber(text) end
-loveframes.Create('text', e_list_map):SetText('TileHeight (Pixsize)')
+e_tilewidth.OnTextChanged = function (object, text)
+	editor.tilewidth = tonumber(object:GetText())
+end
+
+loveframes.Create('text', e_list_map)
+	:SetText('TileHeight (Pixsize)')
+
 local e_tileheight = loveframes.Create('textinput', e_list_map)
-e_tileheight.OnTextChanged = function (object, text) editor.tileheight = tonumber(text) end
-local e_settilesize = loveframes.Create('button', e_list_map):SetText('Set Tile Size')
-e_settilesize.OnClick = create_map_test
+e_tileheight.OnTextChanged = function (object, text)
+	editor.tileheight = tonumber(object:GetText())
+end
+
+local e_settilesize = loveframes.Create('button', e_list_map)
+	:SetText('Set Tile Size')
+e_settilesize.OnClick = set_size
+
+function get_frame_map()
+	return e_frame_map
+end
 
 -- LAYER FRAME
 
-local e_frame_layer = loveframes.Create('frame'):SetState('editor'):SetName('Layer'):SetPos(350, 0):SetScreenLocked(true)
-local e_list_layer = loveframes.Create('list', e_frame_layer):SetPos(0, 25)
+function new_layer()
+	if editor.width and editor.height then
+		e_frame_text1:SetText(editor:inspect())
+	end
+end
 
-loveframes.Create('text', e_list_layer):SetText('Width (Tile nbr)')
+local e_frame_layer = loveframes.Create('frame')
+						:SetName('Layer')
+						:SetState('editor')
+						:SetSize(125, 125)
+						:SetPos(350, 0)
+						:SetScreenLocked(true)
+						:SetVisible(false)
+local e_list_layer = loveframes.Create('list', e_frame_layer)
+						:SetSize(e_frame_layer:GetSize())
+						:SetPos(0, 25)
+						:SetSpacing(5)
+
+loveframes.Create('text', e_list_layer)
+	:SetText('Width (Tile nbr)')
+
 local e_width = loveframes.Create('textinput', e_list_layer)
-loveframes.Create('text', e_list_layer):SetText('Height (Tile nbr)')
+e_width.OnTextChanged = function (object, text)
+	editor.width = tonumber(object:GetText())
+end
+
+loveframes.Create('text', e_list_layer)
+	:SetText('Height (Tile nbr)')
+
 local e_height = loveframes.Create('textinput', e_list_layer)
-local e_newlayer = loveframes.Create('button', e_list_layer):SetText('Create Layer')
+e_height.OnTextChanged = function (object, text)
+	editor.height = tonumber(object:GetText())
+end
+
+local e_newlayer = loveframes.Create('button', e_list_layer)
+					:SetText('Create Layer')
+e_newlayer.OnClick = new_layer
+
+function get_frame_layer()
+	return e_frame_layer
+end
 
 -- DEBUG CONSOLE
 
-c_button = loveframes.Create('button'):SetState('editor'):SetText('console'):SetPos(love.window.getWidth() - 100, love.window.getHeight()- 50)
+c_button = loveframes.Create('button')
+			:SetState('editor')
+			:SetText('console')
+			:SetPos(love.window.getWidth() - 100, love.window.getHeight()- 50)
 c_button.OnClick = pop_console
 
 -- pop_console(loveframes)

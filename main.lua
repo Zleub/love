@@ -13,7 +13,7 @@ function love.update(dt)
 end
 
 function love.draw()
-	love.graphics.print(love.timer.getFPS(), love.graphics.getWidth() -30)
+	love.graphics.print(love.timer.getFPS(), 0, love.window.getHeight() - 20)
 	game:draw()
 	loveframes.draw()
 end

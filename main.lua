@@ -19,11 +19,12 @@ function love.draw()
 end
 
 function love.mousepressed(x, y, button)
+	game:mousepressed(x, y, button)
 	loveframes.mousepressed(x, y, button)
-
 end
 
 function love.mousereleased(x, y, button)
+	game:mousereleased(x, y, button)
 	loveframes.mousereleased(x, y, button)
 end
 

@@ -122,3 +122,34 @@ function buildfullshapes(layer, map, offx, offy)
 	end
 	return shapes
 end
+
+function buildfullshapes_fix(layer, map)
+	local k = 1
+	local m = 0
+	local shapes = {}
+
+	local x, y = centerize(layer.x, layer.y - layer.z)
+
+	for i = 1, layer.height do
+		for j = 1, layer.width do
+
+			table.insert(shapes, map.HC:addPolygon(
+				x - map.Data.tilewidth / 2, y,
+				x, y + map.Data.tileheight / 2,
+				x + map.Data.tilewidth / 2, y,
+				x, y - map.Data.tileheight / 2
+			))
+
+			if k % layer.width == 0 then
+				m = m + 1
+			end
+			k = k + 1
+			x = x + map.Data.tilewidth / 2
+			y = y + map.Data.tileheight / 2
+		end
+		x, y = centerize(layer.x, layer.y - layer.z)
+		y = y + (map.Data.tileheight / 2) * m
+		x = x - (map.Data.tilewidth / 2) * m
+	end
+	return shapes
+end

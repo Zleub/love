@@ -1,28 +1,156 @@
 local editor = {}
 
+function editor.callback(dt, shape_one, shape_two, dx, dy)
+	if shape_one == editor.mouse then
+		editor.toDraw = shape_two
+	elseif shape_two == editor.mouse then
+		editor.toDraw = shape_one
+	end
+end
+
 function editor:addMap()
-	self.HC = self.Collider.new(150)
-	print('add map')
+	self.map = {}
+	self.map.HC = self.Collider.new(150)
+	self.map.HC:setCallbacks(editor.callback)
+	self.map.Data = {}
+	self.map.Data.tilesets = {}
+	self.map.Data.layers = {}
+	self.map.Data.tilewidth = self.tilewidth
+	self.map.Data.tileheight = self.tileheight
+	self.map.Shapes = {}
+
+	self.step = self.tileheight / 2
+	self.mouse = self.map.HC:addCircle(0, 0, 2)
 end
 
 function editor:addLayer()
-	print('add layer')
+	if self.width == nil or self.height == nil then
+		return ;
+	end
+
+	table.insert(self.map.Data.layers, {})
+	local index = #self.map.Data.layers
+	local layer = self.map.Data.layers[index]
+	layer.width = self.width
+	layer.height = self.height
+	layer.properties = 'Not define YET'
+
+	layer.data = {}
+	for i=1,layer.height do
+		for j=1,layer.width do
+			table.insert(layer.data, 0)
+		end
+	end
+
+	if self.name == nil then
+		layer.name = index
+	else
+		layer.name = self.name
+	end
+
+	if self.x == nil then
+		layer.x = 0 + self.x_off
+	else
+		layer.x = self.x + self.x_off
+	end
+
+	if self.y == nil then
+		layer.y = 0 + self.y_off
+	else
+		layer.y = self.y + self.y_off
+	end
+
+	if self.z == nil then
+		layer.z = 0
+	else
+		layer.z = self.z
+		self.z = self.z + self.step
+	end
+
+	table.insert(self.map.Shapes, buildfullshapes_fix(layer, self.map))
 end
 
 function editor:init(Collider)
 	self.State = 'editor'
 	self.Collider = Collider
+	self.step = 0
+	self.x = 0
+	self.y = 0
+	self.z = 0
 
+	self.x_off = 0
+	self.y_off = 0
 	return self
 end
 
 function editor:update(dt)
+	if self.map then
+		self.mouse:moveTo(love.mouse.getPosition())
+		self.map.HC:update(dt)
+	end
+
+	if love.mouse.isDown('l') then
+		local x_diff = self.x_start - love.mouse.getX()
+		local y_diff = self.y_start - love.mouse.getY()
+
+		if x_diff then
+			self.x_off = self.x_off + x_diff
+			self.x_move = x_diff
+			self.x_start = love.mouse.getX()
+		end
+
+		if y_diff then
+			self.y_off = self.y_off + y_diff
+			self.y_move = y_diff
+			self.y_start = love.mouse.getY()
+		end
+	end
 end
 
 function editor:draw()
+	if self.toDraw then
+		local x1, y1, x2, y2, x3, y3, x4, y4 = self.toDraw._polygon:unpack()
+		self.toDraw:draw('fill')
+		love.graphics.line(x1, y1, x1, y1 + self.step)
+		love.graphics.line(x2, y2, x2, y2 + self.step)
+		love.graphics.line(x3, y3, x3, y3 + self.step)
+		love.graphics.line(x4, y4, x4, y4 + self.step)
+
+		love.graphics.line(x1, y1 + self.step, x2, y2 + self.step)
+		love.graphics.line(x2, y2 + self.step, x3, y3 + self.step)
+	end
+
+	if self.map then
+		for k, shapedlayer in pairs(self.map.Shapes) do
+			for key,shape in pairs(shapedlayer) do
+				if self.x_move or self.y_move then
+					shape:move(self.x_move, self.y_move)
+				end
+				shape:draw()
+				-- if shape == self.toDraw then
+				-- 	for kley,vla in pairs(shapedlayer) do
+				-- 		vla:draw()
+				-- 	end
+				-- end
+			end
+		end
+	end
+
 end
 
-function editor:keypressed()
+function editor:keypressed(key, unicode)
+end
+
+function editor:mousepressed(x, y, button)
+	if button == 'l' then
+		self.x_start, self.y_start = love.mouse.getPosition()
+	end
+end
+
+function editor:mousereleased(x, y, button)
+	if button == 'l' then
+		self.x_move, self.y_move = 0, 0
+	end
 end
 
 return editor

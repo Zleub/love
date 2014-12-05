@@ -74,7 +74,8 @@ end
 function new_layer()
 	if game.editor.width and game.editor.height then
 		game.editor:addLayer()
-		print(inspect(game.editor.map.Data))
+		get_panel_layer():SetVisible(true)
+		add_panel_layer(loveframes.Create('panel'))
 	end
 end
 
@@ -117,4 +118,27 @@ e_newlayer.OnClick = new_layer
 
 function get_frame_layer()
 	return e_frame_layer
+end
+
+-- LAYER PANEL
+
+local e_panel_layer = loveframes.Create('panel')
+						:SetState('editor')
+						:SetSize(250, love.window.getHeight())
+						:SetPos(love.window.getWidth() - 250, 0)
+						:SetVisible(false)
+
+local e_panel_button1 = loveframes.Create('button')
+						:SetText('Hide panel')
+
+local e_panel_list = loveframes.Create('list', e_panel_layer)
+						:SetSize(e_panel_layer:GetSize())
+						:SetSpacing(10)
+
+function get_panel_layer()
+	return e_panel_layer
+end
+
+function add_panel_layer(item)
+	return e_panel_list:AddItem(item)
 end

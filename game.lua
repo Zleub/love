@@ -47,4 +47,16 @@ function game:keypressed(key, unicode)
 	end
 end
 
+function game:mousepressed(x, y, button)
+	for k,v in pairs(self.collected) do
+		v:mousepressed(x, y, button)
+	end
+end
+
+function game:mousereleased(x, y, button)
+	for k,v in pairs(self.collected) do
+		v:mousereleased(x, y, button)
+	end
+end
+
 return game

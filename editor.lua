@@ -1,13 +1,5 @@
 local editor = {}
 
-function editor.callback(dt, shape_one, shape_two, dx, dy)
-	if shape_one == editor.mouse then
-		editor.toDraw = shape_two
-	elseif shape_two == editor.mouse then
-		editor.toDraw = shape_one
-	end
-end
-
 function editor:addMap()
 	self.map = {}
 	self.map.HC = self.Collider.new(150)
@@ -20,7 +12,8 @@ function editor:addMap()
 	self.map.Shapes = {}
 
 	self.step = self.tileheight / 2
-	self.mouse = self.map.HC:addCircle(0, 0, 20)
+	self.mouse = self.map.HC:addCircle(0, 0, 1)
+	self.toDraw = {}
 end
 
 function editor:createLayer(layer)
@@ -42,15 +35,15 @@ function editor:createLayer(layer)
 	end
 
 	if self.x == nil then
-		layer.x = 0 + self.x_off
+		layer.x = 0
 	else
-		layer.x = self.x + self.x_off
+		layer.x = self.x
 	end
 
 	if self.y == nil then
-		layer.y = 0 + self.y_off
+		layer.y = 0
 	else
-		layer.y = self.y + self.y_off
+		layer.y = self.y
 	end
 
 	if self.z == nil then
@@ -72,6 +65,7 @@ function editor:addLayer()
 	self:createLayer(layer)
 
 	table.insert(self.map.Shapes, buildfullshapes_fix(layer, self.map))
+	table.insert(self.toDraw, {})
 end
 
 function editor:init(Collider)
@@ -82,53 +76,83 @@ function editor:init(Collider)
 	self.y = 0
 	self.z = 0
 
-	self.x_off = 0
-	self.y_off = 0
 	return self
 end
 
-function editor:update(dt)
+function editor:update_drag(dt)
 	if love.mouse.isDown('l') then
-		local x_diff = self.x_start - love.mouse.getX()
-		local y_diff = self.y_start - love.mouse.getY()
+		local x_diff = love.mouse.getX() - self.x_start
+		local y_diff = love.mouse.getY() - self.y_start
 
 		if x_diff then
-			self.x_off = self.x_off + x_diff
+			self.x = self.x + x_diff
 			self.x_move = x_diff
 			self.x_start = love.mouse.getX()
 		end
 
 		if y_diff then
-			self.y_off = self.y_off + y_diff
+			self.y = self.y + y_diff
 			self.y_move = y_diff
 			self.y_start = love.mouse.getY()
 		end
 	end
+end
 
-	if self.map then
-		self.toDraw = {}
-		self.mouse:moveTo(love.mouse.getPosition())
-		if self.x_move or self.y_move then
-			for k, shapedlayer in pairs(self.map.Shapes) do
-				for key,shape in pairs(shapedlayer) do
-					if self.mouse:collidesWith(shape) then
-						table.insert(self.toDraw, shape)
-					end
-					shape:move(self.x_move, self.y_move)
-				end
-			end
+function editor:move(x, y)
+	for k, shapedlayer in pairs(self.map.Shapes) do
+		for key, shape in pairs(shapedlayer) do
+			shape:move(x, y)
 		end
 	end
+end
 
+function editor:collect()
+	self.collected = self.map.Shapes[#self.map.Shapes]
+end
+
+function editor:collect_draw()
+	for k,v in pairs(self.collected) do
+		if v:collidesWith(self.mouse) then
+			self.toDraw[#self.map.Shapes][k] = v
+		else
+			self.toDraw[#self.map.Shapes][k] = nil
+		end
+
+	end
+end
+
+function editor:update(dt)
+	if not self.map then return end
+
+	self:update_drag(dt)
+	self.mouse:moveTo(love.mouse.getPosition())
+
+	if self.x_move or self.y_move then
+		self:move(self.x_move, self.y_move)
+	end
+
+	self:collect()
+	if self.collected then
+		self:collect_draw()
+	end
 end
 
 function editor:draw()
 	if self.toDraw then
-		self.mouse:draw()
 		for k,v in pairs(self.toDraw) do
-			v:draw()
+			for key, val in pairs(v) do
+				val:draw('fill')
+			end
 		end
 	end
+
+	if self.collected then
+		for key, val in pairs(self.collected) do
+			val:draw()
+		end
+	end
+
+	love.graphics.print(inspect(self, {depth = 1}))
 end
 
 function editor:keypressed(key, unicode)

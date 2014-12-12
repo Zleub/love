@@ -74,8 +74,8 @@ end
 function new_layer()
 	if game.editor.width and game.editor.height then
 		game.editor:addLayer()
-		get_panel_layer():SetVisible(true)
-		add_panel_layer(loveframes.Create('panel'))
+		-- get_panel_layer():SetVisible(true)
+		-- add_panel_layer(loveframes.Create('panel'))
 	end
 end
 
@@ -85,6 +85,7 @@ local e_frame_layer = loveframes.Create('frame')
 						:SetSize(125, 200)
 						:SetScreenLocked(true)
 						:SetVisible(false)
+						:SetPos(love.window.getWidth() - 100)
 local e_list_layer = loveframes.Create('list', e_frame_layer)
 						:SetSize(e_frame_layer:GetSize())
 						:SetPos(0, 25)

@@ -1,19 +1,53 @@
 inspect = require('inspect')
 require('lib')
 
+FPS = {}
+
+function FPS:new(delay)
+	self.width = love.window.getWidth()
+	self.height = love.window.getHeight()
+	self.delay = delay
+	self.list = {}
+
+	self.update = function (self, dt)
+		self.delay = self.delay - dt
+		if self.delay < 0 then
+			table.insert(self.list, love.timer.getFPS())
+			if #self.list - 1 > self.width / 3 then
+				table.remove(self.list, 1)
+			end
+			self.delay = delay
+		end
+	end
+	self.draw = function (self)
+		love.graphics.setColor(255, 255, 255, 100)
+		for k,v in pairs(self.list) do
+			if v < 30 then love.graphics.setColor(255, 0, 0, 100) end
+			love.graphics.rectangle('fill',
+				self.width - (k * 3),
+				self.height - v,
+				3, v)
+			if v < 30 then love.graphics.setColor(255, 255, 255, 100) end
+		end
+		love.graphics.setColor(255, 255, 255, 255)
+	end
+end
+
 function love.load()
 	loveframes = require("lua.loveframes")
 	game = require('game'):init()
+
+	FPS:new(1)
 end
 
 function love.update(dt)
+	FPS:update(dt)
 	game:update(dt)
-	-- print(loveframes.GetState())
 	loveframes.update(dt)
 end
 
 function love.draw()
-	love.graphics.print(love.timer.getFPS(), 0, love.window.getHeight() - 20)
+	FPS:draw()
 	game:draw()
 	loveframes.draw()
 end

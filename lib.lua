@@ -123,12 +123,12 @@ function buildfullshapes(layer, map, offx, offy)
 	return shapes
 end
 
-function buildfullshapes_fix(layer, map, x, y, z)
+function buildfullshapes_fix(layer, map, off_x, off_y, off_z)
 	local k = 1
 	local m = 0
 	local shapes = {}
 
-	local x, y = centerize(layer.x, layer.y - layer.z)
+	local x, y = centerize(off_x, off_y - off_z)
 
 	for i = 1, layer.height do
 		for j = 1, layer.width do
@@ -147,7 +147,7 @@ function buildfullshapes_fix(layer, map, x, y, z)
 			x = x + map.Data.tilewidth / 2
 			y = y + map.Data.tileheight / 2
 		end
-		x, y = centerize(layer.x, layer.y - layer.z)
+		x, y = centerize(off_x, off_y - off_z)
 		y = y + (map.Data.tileheight / 2) * m
 		x = x - (map.Data.tilewidth / 2) * m
 	end

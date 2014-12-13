@@ -32,25 +32,6 @@ function editor:createLayer(layer)
 	else
 		layer.name = self.name
 	end
-
-	if self.x == nil then
-		layer.x = 0
-	else
-		layer.x = self.x
-	end
-
-	if self.y == nil then
-		layer.y = 0
-	else
-		layer.y = self.y
-	end
-
-	if self.z == nil then
-		layer.z = 0
-	else
-		layer.z = self.z
-		self.z = self.z + self.step
-	end
 end
 
 function editor:addLayer()
@@ -64,12 +45,12 @@ function editor:addLayer()
 	self:createLayer(layer)
 
 	table.insert(self.map.Shapes, buildfullshapes_fix(layer, self.map, self.x, self.y, self.z))
+	self.z = self.z + self.step
 end
 
 function editor:init(Collider)
 	self.State = 'editor'
 	self.Collider = Collider
-	self.step = 0
 	self.x = 0
 	self.y = 0
 	self.z = 0
@@ -95,18 +76,34 @@ function editor:update_drag(dt)
 		end
 	end
 
-	-- if love.mouse.isDown('wu') then
-	-- 	self.HC:clear()
-	-- 	self.map.Shapes = {}
-	-- 	self.map.tilewidth = self.map.tilewidth + 2
-	-- 	self.map.tileheight = self.map.tileheight + 1
-	-- 	for k,layer in pairs(self.map.Data.layers) do
-	-- 		table.insert(self.map.Shapes, buildfullshapes_fix(layer, self.map))
-	-- 	end
-	-- end
-
 	if love.mouse.isDown('r') then
 		print(inspect(self, {depth = 1}))
+	end
+
+	if love.keyboard.isDown('up') then
+		self.map.HC:clear()
+		-- self.x = 0
+		-- self.y = 0
+		self.z = 0
+		self.map.Shapes = {}
+		self.map.Data.tileheight = self.map.Data.tileheight - 1 * dt * 10
+		for k,layer in pairs(self.map.Data.layers) do
+			table.insert(self.map.Shapes, buildfullshapes_fix(layer, self.map, self.x, self.y, self.z))
+			self.z = self.z + self.step
+		end
+	end
+
+	if love.keyboard.isDown('down') then
+		self.map.HC:clear()
+		-- self.x = 0
+		-- self.y = 0
+		self.z = 0
+		self.map.Shapes = {}
+		self.map.Data.tileheight = self.map.Data.tileheight + 1 * dt * 10
+		for k,layer in pairs(self.map.Data.layers) do
+			table.insert(self.map.Shapes, buildfullshapes_fix(layer, self.map, self.x, self.y, self.z))
+			self.z = self.z + self.step
+		end
 	end
 end
 
@@ -143,10 +140,12 @@ function editor:collect()
 end
 
 function editor:collect_draw()
-	for key, shape in pairs(self.collected[#self.collected]) do
-		if shape:collidesWith(self.mouse) then
-			self.toDraw = shape
-			return
+	if #self.collected > 0 then
+		for key, shape in pairs(self.collected[#self.collected]) do
+			if shape:collidesWith(self.mouse) then
+				self.toDraw = shape
+				return
+			end
 		end
 	end
 end
@@ -162,9 +161,7 @@ function editor:update(dt)
 	end
 
 	self:collect()
-	if #self.collected > 1 then
-		self:collect_draw()
-	end
+	self:collect_draw()
 end
 
 function editor:draw()
@@ -190,17 +187,18 @@ function editor:mousepressed(x, y, button)
 	if button == 'l' then
 		self.x_start, self.y_start = love.mouse.getPosition()
 	end
-	
+
 	if button == 'wu' then
 		self.map.HC:clear()
 		-- self.x = 0
 		-- self.y = 0
-		-- self.z = 0
+		self.z = 0
 		self.map.Shapes = {}
 		self.map.Data.tilewidth = self.map.Data.tilewidth + 2
 		self.map.Data.tileheight = self.map.Data.tileheight + 1
 		for k,layer in pairs(self.map.Data.layers) do
-			table.insert(self.map.Shapes, buildfullshapes_fix(layer, self.map))
+			table.insert(self.map.Shapes, buildfullshapes_fix(layer, self.map, self.x, self.y, self.z))
+			self.z = self.z + self.step
 		end
 	end
 
@@ -208,12 +206,13 @@ function editor:mousepressed(x, y, button)
 		self.map.HC:clear()
 		-- self.x = 0
 		-- self.y = 0
-		-- self.z = 0
+		self.z = 0
 		self.map.Shapes = {}
 		self.map.Data.tilewidth = self.map.Data.tilewidth - 2
 		self.map.Data.tileheight = self.map.Data.tileheight - 1
 		for k,layer in pairs(self.map.Data.layers) do
-			table.insert(self.map.Shapes, buildfullshapes_fix(layer, self.map))
+			table.insert(self.map.Shapes, buildfullshapes_fix(layer, self.map, self.x, self.y, self.z))
+			self.z = self.z + self.step
 		end
 	end
 end

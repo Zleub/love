@@ -13,7 +13,6 @@ function editor:addMap()
 
 	self.step = self.tileheight / 2
 	self.mouse = self.map.HC:addCircle(0, 0, 1)
-	self.toDraw = {}
 end
 
 function editor:createLayer(layer)
@@ -64,8 +63,7 @@ function editor:addLayer()
 	local layer = self.map.Data.layers[index]
 	self:createLayer(layer)
 
-	table.insert(self.map.Shapes, buildfullshapes_fix(layer, self.map))
-	table.insert(self.toDraw, {})
+	table.insert(self.map.Shapes, buildfullshapes_fix(layer, self.map, self.x, self.y, self.z))
 end
 
 function editor:init(Collider)
@@ -96,6 +94,20 @@ function editor:update_drag(dt)
 			self.y_start = love.mouse.getY()
 		end
 	end
+
+	-- if love.mouse.isDown('wu') then
+	-- 	self.HC:clear()
+	-- 	self.map.Shapes = {}
+	-- 	self.map.tilewidth = self.map.tilewidth + 2
+	-- 	self.map.tileheight = self.map.tileheight + 1
+	-- 	for k,layer in pairs(self.map.Data.layers) do
+	-- 		table.insert(self.map.Shapes, buildfullshapes_fix(layer, self.map))
+	-- 	end
+	-- end
+
+	if love.mouse.isDown('r') then
+		print(inspect(self, {depth = 1}))
+	end
 end
 
 function editor:move(x, y)
@@ -107,17 +119,35 @@ function editor:move(x, y)
 end
 
 function editor:collect()
-	self.collected = self.map.Shapes[#self.map.Shapes]
+	self.collected = {}
+	if #self.map.Shapes == 1 then
+		table.insert(self.collected, self.map.Shapes[1])
+	else
+		for i=1,#self.map.Shapes - 1 do
+			table.insert(self.collected, {})
+			local sqrt = math.sqrt(#self.map.Shapes[i])
+			local nbr = sqrt
+			while nbr < #self.map.Shapes[i] do
+				self.collected[i][nbr] = self.map.Shapes[i][nbr]
+				nbr = nbr + sqrt
+			end
+
+			nbr = #self.map.Shapes[i] - sqrt + 1
+			while nbr <= #self.map.Shapes[i] do
+				self.collected[i][nbr] = self.map.Shapes[i][nbr]
+				nbr = nbr + 1
+			end
+		end
+		table.insert(self.collected, self.map.Shapes[#self.map.Shapes])
+	end
 end
 
 function editor:collect_draw()
-	for k,v in pairs(self.collected) do
-		if v:collidesWith(self.mouse) then
-			self.toDraw[#self.map.Shapes][k] = v
-		else
-			self.toDraw[#self.map.Shapes][k] = nil
+	for key, shape in pairs(self.collected[#self.collected]) do
+		if shape:collidesWith(self.mouse) then
+			self.toDraw = shape
+			return
 		end
-
 	end
 end
 
@@ -132,23 +162,21 @@ function editor:update(dt)
 	end
 
 	self:collect()
-	if self.collected then
+	if #self.collected > 1 then
 		self:collect_draw()
 	end
 end
 
 function editor:draw()
 	if self.toDraw then
-		for k,v in pairs(self.toDraw) do
-			for key, val in pairs(v) do
-				val:draw('fill')
-			end
-		end
+		self.toDraw:draw('fill')
 	end
 
 	if self.collected then
 		for key, val in pairs(self.collected) do
-			val:draw()
+			for k, v in pairs(val) do
+				v:draw()
+			end
 		end
 	end
 
@@ -161,6 +189,32 @@ end
 function editor:mousepressed(x, y, button)
 	if button == 'l' then
 		self.x_start, self.y_start = love.mouse.getPosition()
+	end
+	
+	if button == 'wu' then
+		self.map.HC:clear()
+		-- self.x = 0
+		-- self.y = 0
+		-- self.z = 0
+		self.map.Shapes = {}
+		self.map.Data.tilewidth = self.map.Data.tilewidth + 2
+		self.map.Data.tileheight = self.map.Data.tileheight + 1
+		for k,layer in pairs(self.map.Data.layers) do
+			table.insert(self.map.Shapes, buildfullshapes_fix(layer, self.map))
+		end
+	end
+
+	if button == 'wd' then
+		self.map.HC:clear()
+		-- self.x = 0
+		-- self.y = 0
+		-- self.z = 0
+		self.map.Shapes = {}
+		self.map.Data.tilewidth = self.map.Data.tilewidth - 2
+		self.map.Data.tileheight = self.map.Data.tileheight - 1
+		for k,layer in pairs(self.map.Data.layers) do
+			table.insert(self.map.Shapes, buildfullshapes_fix(layer, self.map))
+		end
 	end
 end
 

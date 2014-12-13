@@ -123,7 +123,7 @@ function buildfullshapes(layer, map, offx, offy)
 	return shapes
 end
 
-function buildfullshapes_fix(layer, map)
+function buildfullshapes_fix(layer, map, x, y, z)
 	local k = 1
 	local m = 0
 	local shapes = {}

@@ -33,6 +33,8 @@ function FPS:new(delay)
 	end
 end
 
+-- LOVE CORE RESPECT-FULL
+
 function love.load()
 	loveframes = require("lua.loveframes")
 	game = require('game'):init()
@@ -51,6 +53,8 @@ function love.draw()
 	game:draw()
 	loveframes.draw()
 end
+
+-- CALLBACKS
 
 function love.mousepressed(x, y, button)
 	game:mousepressed(x, y, button)
@@ -74,3 +78,4 @@ end
 function love.textinput(text)
 	loveframes.textinput(text)
 end
+

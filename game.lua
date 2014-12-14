@@ -1,8 +1,22 @@
 local game = {}
 
 function game:require_all()
-
 end
+
+-- UPDATE & COLLECT
+
+function game:collect()
+	self.collected = {}
+
+	for k,v in pairs(self) do
+		if type(v) == 'table' and v.State == loveframes.GetState() then
+			table.insert(self.collected, v)
+		end
+	end
+end
+
+
+-- LOVE CORE RESPECT-FULL
 
 function game:init()
 	require 'ui'
@@ -18,16 +32,6 @@ function game:init()
 	return self
 end
 
-function game:collect()
-	self.collected = {}
-
-	for k,v in pairs(self) do
-		if type(v) == 'table' and v.State == loveframes.GetState() then
-			table.insert(self.collected, v)
-		end
-	end
-end
-
 function game:update(dt)
 	self:collect()
 	for k,v in pairs(self.collected) do
@@ -40,6 +44,8 @@ function game:draw()
 		v:draw()
 	end
 end
+
+-- CALLBACKS
 
 function game:keypressed(key, unicode)
 	for k,v in pairs(self.collected) do

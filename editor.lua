@@ -62,20 +62,27 @@ function Shapelist.new(in_table, map, layer, offset) -- offset == {x = 'number',
 					x + map.Data.tilewidth / 2, y,
 					x, y - map.Data.tileheight / 2
 				),
-				move = function (self, u, v)
+				move = function (self, x, y)
 					local vertices = self.shape._polygon.vertices
-					print('1', inspect(vertices[1]))
-					print('2', inspect(vertices[2]))
-					print('3', inspect(vertices[3]))
-					print('4', inspect(vertices[4]))
-					vertices[1].x = vertices[1].x + u
-					vertices[1].y = vertices[1].y + v
-					vertices[2].x = vertices[2].x + u
-					vertices[2].y = vertices[2].y + v
-					vertices[3].x = vertices[3].x + u
-					vertices[3].y = vertices[3].y + v
-					vertices[4].x = vertices[4].x + u
-					vertices[4].y = vertices[4].y + v
+					vertices[1].x = vertices[1].x + x
+					vertices[1].y = vertices[1].y + y
+					vertices[2].x = vertices[2].x + x
+					vertices[2].y = vertices[2].y + y
+					vertices[3].x = vertices[3].x + x
+					vertices[3].y = vertices[3].y + y
+					vertices[4].x = vertices[4].x + x
+					vertices[4].y = vertices[4].y + y
+				end,
+				resize = function (self, scale)
+					-- local vertices = self.shape._polygon.vertices
+					-- vertices[1].x = vertices[1].x + u * 2
+					-- vertices[1].y = vertices[1].y + v * 2
+					-- vertices[2].x = vertices[2].x + u * 2
+					-- vertices[2].y = vertices[2].y + v * 2
+					-- vertices[3].x = vertices[3].x + u
+					-- vertices[3].y = vertices[3].y + v
+					-- vertices[4].x = vertices[4].x + u
+					-- vertices[4].y = vertices[4].y + v
 				end
 			})
 
@@ -91,6 +98,11 @@ function Shapelist.new(in_table, map, layer, offset) -- offset == {x = 'number',
 		x = x - (map.Data.tilewidth / 2) * m
 	end
 	table.insert(in_table, shapes)
+end
+
+local Map = {}
+
+function Map:new()
 end
 
 -- OBJECTS MANIPULATION
@@ -155,9 +167,16 @@ function editor:addLayer()
 end
 
 function editor:move(x, y)
+	if not self.map.Shapes or not self.map.Meshes then return end
+
 	for k, shapedlayer in pairs(self.map.Shapes) do
 		for key, shape in pairs(shapedlayer) do
 			shape:move(x, y)
+		end
+	end
+	for k,v in pairs(self.map.Meshes) do
+		for key, val in pairs(v) do
+			val:move(self.x_move, self.y_move)
 		end
 	end
 end
@@ -177,26 +196,26 @@ function editor:reset_key(key, dt)
 	-- 	self.map.Data.tileheight = self.map.Data.tileheight + 1 * dt * 10
 	-- 	self.step = self.map.Data.tileheight / 2
 	elseif key == 'wu' then
-		return 2, 1
+		return 0.1
 	elseif key == 'wd' then
-		return -2, -1
+		return -0.1
 	end
 end
 
 function editor:reset(key, dt)
 	-- self.map.HC:clear()
-	self.z = 0
+	-- self.z = 0
 	-- self.map.Shapes = {}
 
-	local u,v = self:reset_key(key, dt)
-	print(u, v)
+	local u = self:reset_key(key, dt)
 
 	for k, layer in pairs(self.map.Shapes) do
 		for key, val in pairs(layer) do
-			val:move(u, v)
+			val:resize(self.scale)
 		end
 	end
 
+	-- RE-CREATION
 
 	-- for k,layer in pairs(self.map.Data.layers) do
 	-- 	Shapelist.new(self.map.Shapes, self.map, layer, {x = self.x, y = self.y, z = self.z})
@@ -217,6 +236,8 @@ end
 
 function editor:update_input(dt)
 	if love.mouse.isDown('r') then print(inspect(self, {depth = 4})) end
+
+	if love.mouse.isDown('wu') then print('ALERT') end
 
 	if love.mouse.isDown('l') then
 		local x_diff = love.mouse.getX() - self.x_start
@@ -286,6 +307,7 @@ end
 function editor:init(Collider)
 	self.State = 'editor'
 	self.Collider = Collider
+	self.scale = 1
 	self.x = 0
 	self.y = 0
 	self.z = 0
@@ -301,15 +323,6 @@ function editor:update(dt)
 
 	if self.x_move ~= 0 or self.y_move ~= 0 then
 		self:move(self.x_move, self.y_move)
-
-		-- MOVE MESHES
-		if self.map.Meshes then
-		for k,v in pairs(self.map.Meshes) do
-			for key, val in pairs(v) do
-				val:move(self.x_move * 10, self.y_move * 10)
-			end
-		end
-		end
 	end
 
 	self:collect()
@@ -320,8 +333,8 @@ function editor:draw()
 	if self.collected then
 		for key, val in pairs(self.collected) do
 			for k, v in pairs(val) do
+				self.map.Meshes[key][k]:draw()
 				v.shape:draw()
-				-- self.map.Meshes[key][k]:draw()
 			end
 		end
 	end
@@ -342,10 +355,12 @@ function editor:mousepressed(x, y, button)
 	end
 
 	if button == 'wu' then
+		self.scale = self.scale - 0.2
 		self:reset('wu')
 	end
 
 	if button == 'wd' then
+		self.scale = self.scale + 0.2
 		self:reset('wd')
 	end
 end

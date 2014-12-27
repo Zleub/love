@@ -73,16 +73,16 @@ function Shapelist.new(in_table, map, layer, offset) -- offset == {x = 'number',
 					vertices[4].x = vertices[4].x + x
 					vertices[4].y = vertices[4].y + y
 				end,
-				resize = function (self, scale)
-					-- local vertices = self.shape._polygon.vertices
-					-- vertices[1].x = vertices[1].x + u * 2
-					-- vertices[1].y = vertices[1].y + v * 2
-					-- vertices[2].x = vertices[2].x + u * 2
-					-- vertices[2].y = vertices[2].y + v * 2
-					-- vertices[3].x = vertices[3].x + u
-					-- vertices[3].y = vertices[3].y + v
-					-- vertices[4].x = vertices[4].x + u
-					-- vertices[4].y = vertices[4].y + v
+				resize = function (self, u, v)
+					local vertices = self.shape._polygon.vertices
+					vertices[1].x = vertices[1].x + u
+					vertices[1].y = vertices[1].y + v
+					vertices[2].x = vertices[2].x + u
+					vertices[2].y = vertices[2].y + v
+					vertices[3].x = vertices[3].x + u
+					vertices[3].y = vertices[3].y + v
+					vertices[4].x = vertices[4].x + u
+					vertices[4].y = vertices[4].y + v
 				end
 			})
 
